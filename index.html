@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Ulang Tahun!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: none;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #landing {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+        }
+
+        .candles-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+            margin-bottom: 2rem;
+        }
+
+        .candle {
+            width: 30px;
+            height: 100px;
+            background: linear-gradient(to bottom, #FFDDC1, #D2691E);
+            margin: 15px;
+            position: relative;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 10px;
+            background: #FFA07A;
+            border-radius: 50%;
+        }
+
+        .candle.off {
+            opacity: 0.5;
+            transition: opacity 0.6s ease-out;
+            /* Menghilangkan perubahan tinggi lilin */
+        }
+
+        .candle.off .flame {
+            display: none;
+            /* Hanya apinya yang menghilang saat lilin ditiup */
+        }
+
+        .candle:hover .flame {
+            animation: flicker 0.2s infinite alternate;
+            filter: brightness(1.5);
+        }
+
+        .flame {
+            width: 20px;
+            height: 30px;
+            background: radial-gradient(ellipse at bottom, #FFD700 20%, #FF4500);
+            border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: flicker 0.5s infinite alternate;
+            filter: blur(1px);
+        }
+
+        @keyframes flicker {
+            0% {
+                transform: translateX(-50%) scale(1) rotate(-2deg);
+            }
+
+            25% {
+                transform: translateX(-50%) scale(1.05) rotate(2deg);
+            }
+
+            50% {
+                transform: translateX(-50%) scale(0.95) rotate(-1deg);
+            }
+
+            75% {
+                transform: translateX(-50%) scale(1.05) rotate(1deg);
+            }
+
+            100% {
+                transform: translateX(-50%) scale(1) rotate(0deg);
+            }
+        }
+
+        .greeting {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            /* Opacity lebih lembut */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            background-color: #7B68EE;
+            /* Warna latar belakang lebih lembut */
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
+            /* Lebih halus */
+        }
+
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            /* Font untuk teks ucapan */
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        p {
+            font-size: 1.5rem;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #music-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #32CD32;
+            /* Mengubah warna tombol */
+            color: #ffffff;
+            border: none;
+            padding: 1.2rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1000;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        #music-button:hover {
+            transform: scale(1.2);
+            background-color: #228B22;
+            /* Warna hijau lebih gelap saat dihover */
+        }
+
+        /* Tombol Musik */
+        #music-button.on {
+            background-color: #FF4500;
+            /* Warna berbeda saat musik menyala */
+        }
+
+        #music-button::before {
+            content: '♪';
+            font-size: 2rem;
+        }
+
+        #music-button.on::before {
+            content: '❚❚';
+            /* Ganti dengan ikon jeda saat musik dinyalakan */
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            z-index: 1000;
+        }
+
+        .popup p {
+            font-size: 1.5rem;
+        }
+
+        .popup button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #32CD32;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+
+        .styled-button {
+            background: linear-gradient(45deg, #FF4500, #FFD700);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+        }
+
+        .styled-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 15px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Album Photo Styling */
+        .album-container {
+            width: 80%;
+            max-width: 800px;
+            overflow: hidden;
+            position: relative;
+            margin: 2rem auto;
+        }
+
+        .album-slider {
+            display: flex;
+            transition: transform 1s ease;
+        }
+
+        .album-slider img {
+            width: 100%;
+            height: 300px;
+            /* Sesuaikan tinggi gambar */
+            object-fit: contain;
+            /* Gambar akan disesuaikan dengan bingkai tanpa cropping */
+            border-radius: 15px;
+            margin-right: 20px;
+            background-color: #f0f0f0;
+            /* Berikan warna latar belakang untuk gambar dengan rasio berbeda */
+        }
+
+
+        .slide-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .slide-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .slide-button.prev {
+            left: 10px;
+        }
+
+        .slide-button.next {
+            right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .album-slider img {
+                width: 100%;
+                height: auto;
+                /* Pada perangkat kecil, biarkan tinggi otomatis */
+                object-fit: cover;
+                /* Pilih sesuai preferensi */
+            }
+
+            .album-container {
+                width: 100%;
+                max-width: 90%;
+            }
+        }
+
+        .candle {
+            width: 20px;
+            height: 60px;
+        }
+
+        .greeting h1 {
+            font-size: 2rem;
+        }
+
+        .greeting p {
+            font-size: 1.2rem;
+        }
+
+        .styled-button {
+            font-size: 1rem;
+            padding: 0.7rem 1.2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Landing Page with Candles -->
+    <div id="landing" class="page active">
+        <div class="candles-container">
+            <!-- Lilin yang bisa ditiup -->
+        </div>
+    </div>
+
+    <!-- Greeting Page -->
+    <div id="greeting-page" class="page">
+        <div class="greeting">
+            <h1>Selamat Ulang Tahun, Srik Zeyenggg</h1>
+            <p>MAAFFF BANGETTT aku sangat telatt heheh, semogaa kamuu sukaa yaaa, jadiii celamat ulang tahun yang ke 20
+                ya srikkkk, doakuu yang terbaik pokoknya buat kamuu, apapun yang kamu inginkan astungkaraa akan cepat
+                tercapaii.
+                oh iyaa kamuu jangan sedih sedihh lagii yaa srikk, temen temenn muu banyakk kokkkk, kamuu haruss bisa
+                menghadapii ini semuaa srikk, astungkaraa semuanya akan baik baik sajaaaa... akuu akann tetappp
+                menjadiii temenmuuu, mau curhat atau ceritaaa atau keluh kesahh sinii sama akuu, akuu siap dengerin
+                semuaa ceritaa kamuuuu loppp.
+                akuu harapp kitaaa bisaa temenann sampeee kapanpun ituuuu selamanyaa lah yaa mweheh, meskipun nantinyaa
+                jalan kita akan berbedaaaa tapiii kitaaa masih tetapp samaa samaaa
+            </p>
+            <button class="styled-button" onclick="showPopup()">Lihat Hadiah</button>
+            <button class="styled-button" onclick="showAlbum()">Lihat Album Foto</button>
+        </div>
+    </div>
+
+    <!-- Popup Hadiah -->
+    <div class="popup" id="gift-popup">
+        <p>Hadiah ada di kotak atas lemari ya Srik!</p>
+        <button onclick="closePopup()">Tutup</button>
+    </div>
+
+    <!-- Album Foto Page -->
+    <div id="album-page" class="page">
+        <div class="album-container">
+            <div class="album-slider">
+                <img src="srik24.jpg" alt="Foto 24" />
+                <img src="srik23.jpg" alt="Foto 23" />
+                <img src="srik22.jpg" alt="Foto 22" />
+                <img src="srik21.jpg" alt="Foto 21" />
+                <img src="srik20.jpg" alt="Foto 20" />
+                <img src="srik19.jpg" alt="Foto 19" />
+                <img src="srik18.jpg" alt="Foto 18" />
+                <img src="srik17.jpg" alt="Foto 17" />
+                <img src="srik16.jpg" alt="Foto 15" />
+                <img src="srik15.jpg" alt="Foto 15" />
+                <img src="srik14.jpeg" alt="Foto 14" />
+                <img src="srik1.jpg" alt="Foto 1" />
+                <img src="srik2.jpg" alt="Foto 2" />
+                <img src="srik3.jpg" alt="Foto 3" />
+                <img src="srik4.jpg" alt="Foto 4" />
+                <img src="srik5.jpg" alt="Foto 5" />
+                <img src="srik6.jpg" alt="Foto 6" />
+                <img src="srik7.jpg" alt="Foto 7" />
+                <img src="srik8.jpg" alt="Foto 8" />
+                <img src="srik9.jpg" alt="Foto 9" />
+                <img src="srik10.jpg" alt="Foto 10" />
+                <img src="srik2.jpg" alt="Foto 2" />
+                <img src="srik3.jpg" alt="Foto 3" />
+                <img src="srik4.jpg" alt="Foto 4" />
+                <img src="srik5.jpg" alt="Foto 5" />
+                <img src="srik11.jpg" alt="Foto 11" />
+                <img src="srik12.jpg" alt="Foto 12" />
+                <img src="srik13.jpg" alt="Foto 13" />
+            </div>
+            <button class="slide-button prev" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="slide-button next" onclick="changeSlide(1)">&#10095;</button>
+        </div>
+        <button class="styled-button" onclick="closeAlbum()">Tutup Album</button>
+    </div>
+
+    <!-- Button untuk Musik -->
+    <button id="music-button" onclick="toggleMusic()">♫</button>
+
+    <script>
+        let candlesLeft = 20;
+
+        // Generate 20 candles
+        const candlesContainer = document.querySelector('.candles-container');
+        for (let i = 0; i < 20; i++) {
+            const candle = document.createElement('div');
+            candle.classList.add('candle');
+            candle.innerHTML = '<div class="flame"></div>';
+            candle.addEventListener('click', () => {
+                if (!candle.classList.contains('off')) {
+                    candle.classList.add('off');
+                    candle.querySelector('.flame').style.display = 'none';
+                    candlesLeft--;
+                    if (candlesLeft === 0) {
+                        document.getElementById('landing').classList.remove('active');
+                        document.getElementById('greeting-page').classList.add('active');
+                    }
+                }
+            });
+            candlesContainer.appendChild(candle);
+        }
+
+        // Show popup
+        function showPopup() {
+            document.getElementById('gift-popup').style.display = 'block';
+        }
+
+        // Close popup
+        function closePopup() {
+            document.getElementById('gift-popup').style.display = 'none';
+        }
+
+        // Show album
+        function showAlbum() {
+            document.getElementById('album-page').classList.add('active');
+            document.getElementById('greeting-page').classList.remove('active');
+        }
+
+        // Close album
+        function closeAlbum() {
+            document.getElementById('album-page').classList.remove('active');
+            document.getElementById('greeting-page').classList.add('active');
+        }
+
+        // Music play/pause
+        let musicPlaying = false;
+        const audio = new Audio('happybirthday.mp3');
+        function toggleMusic() {
+            if (musicPlaying) {
+                audio.pause();
+            } else {
+                audio.play();
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+        function toggleMusic() {
+            const button = document.getElementById('music-button');
+            if (musicPlaying) {
+                audio.pause();
+                button.classList.remove('on');
+            } else {
+                audio.play();
+                button.classList.add('on');
+            }
+            musicPlaying = !musicPlaying;
+        }
+
+
+        // Album slider functionality
+        let currentSlide = 0;
+        const totalSlides = document.querySelectorAll('.album-slider img').length; // Hitung total slide
+        const albumSlider = document.querySelector('.album-slider');
+
+        function changeSlide(direction) {
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            const slideWidth = albumSlider.querySelector('img').clientWidth;
+            albumSlider.style.transform = `translateX(-${currentSlide * slideWidth}px)`; // Hitung lebar gambar
+        }
+
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function (stream) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 512;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                function detectBlow() {
+                    analyser.getByteFrequencyData(dataArray);
+                    const volume = Math.max(...dataArray);
+
+                    if (volume > 150) { // Jika volume cukup tinggi
+                        blowOutCandle(); // Padamkan lilin
+                    }
+
+                    requestAnimationFrame(detectBlow);
+                }
+
+                detectBlow();
+            })
+            .catch(function (err) {
+                console.log('Error accessing microphone: ' + err);
+            });
+
+        function blowOutCandle() {
+            // Logic untuk mematikan lilin
+            const candle = document.querySelector('.candle.on');
+            if (candle) {
+                candle.classList.remove('on');
+                candle.classList.add('off');
+                allCandlesBlownOut();
+            }
+        }
+
+    </script>
+</body>
+
+</html>
